@@ -1,18 +1,51 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:quiz/model/user_model.dart';
+import 'package:quiz/screens/dashboard_screen.dart';
 import 'package:quiz/screens/signup_screen.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
 
   @override
-  State<LoginScreen> createState() => _LoginScreenState();
+  State<LoginScreen> createState() => LoginScreenState();
 }
 
-class _LoginScreenState extends State<LoginScreen> {
+class LoginScreenState extends State<LoginScreen> {
   final formKey = GlobalKey<FormState>();
-  TextEditingController enterdEmailController = TextEditingController();
+
+  TextEditingController enteredEmailController = TextEditingController();
   TextEditingController enteredPasswordController = TextEditingController();
+
   bool passwordVisible = false;
+
+  List<UserModel> localUserList = [];
+
+  static const isLoggedInKey = 'isLoggedInKey';
+  static const userId = 'userId';
+  
+  //save current user info
+  void loginInfoSaver(String email) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.setBool(isLoggedInKey, true);
+    prefs.setString(userId, email);
+  }
+ //get all the global users and store in the local user list
+  Future<void> getUsers() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    List<String>? globalUsers =
+        prefs.getStringList(SignUpScreenState.globalUserListKey);
+    if (globalUsers != null) {
+      localUserList = [];
+      for (var userString in globalUsers) {
+        Map<String, dynamic> userData = json.decode(userString);
+        UserModel user = UserModel.fromJson(userData);
+        localUserList.add(user);
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -53,7 +86,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                     //Email....
                     TextFormField(
-                      controller: enterdEmailController,
+                      controller: enteredEmailController,
                       cursorColor: Colors.black,
                       validator: (value) {
                         if (value == null || value == '') {
@@ -160,8 +193,24 @@ class _LoginScreenState extends State<LoginScreen> {
                     SizedBox(height: screenHeight * 0.02),
                     //Login Button
                     MaterialButton(
-                      onPressed: () {
-                        if (formKey.currentState!.validate()) {}
+                      onPressed: () async {
+                        if (formKey.currentState!.validate()) {
+                          //getting all the users from sharedPreferences and store local list of users
+                          await getUsers();
+                          for (UserModel i in localUserList) {
+                            if (i.email == enteredEmailController.text &&
+                                i.password == enteredPasswordController.text) {
+                              loginInfoSaver(i.email);
+                              Navigator.of(context).pushAndRemoveUntil(
+                                  MaterialPageRoute(
+                                      builder: (context) =>
+                                          DashboardScreen()),
+                                  (route) => false);
+
+                              break;
+                            }
+                          }
+                        }
                       },
                       height: screenHeight * 0.065,
                       minWidth: screenWidth,
@@ -171,7 +220,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       child: Text(
                         'Login',
                         style: TextStyle(
-                            fontSize: screenHeight * 0.032,
+                            fontSize: screenHeight * 0.030,
                             color: Colors.white,
                             fontWeight: FontWeight.w500),
                       ),
@@ -185,7 +234,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         Text(
                           "Dont't have an account?",
                           style: TextStyle(
-                              fontSize: screenHeight * 0.025,
+                              fontSize: screenHeight * 0.023,
                               fontWeight: FontWeight.w400),
                         ),
                         //Sign Up......
@@ -203,7 +252,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           child: Text(
                             "Sign up",
                             style: TextStyle(
-                                fontSize: screenHeight * 0.025,
+                                fontSize: screenHeight * 0.024,
                                 color: Colors.lightBlue),
                           ),
                         ),

@@ -1,13 +1,18 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:quiz/model/user_model.dart';
+import 'package:quiz/screens/login_screen.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class SignUpScreen extends StatefulWidget {
   const SignUpScreen({super.key});
 
   @override
-  State<SignUpScreen> createState() => _SignUpScreenState();
+  State<SignUpScreen> createState() => SignUpScreenState();
 }
 
-class _SignUpScreenState extends State<SignUpScreen> {
+class SignUpScreenState extends State<SignUpScreen> {
   final formKey = GlobalKey<FormState>();
   TextEditingController nameController = TextEditingController();
   TextEditingController emailController = TextEditingController();
@@ -16,6 +21,43 @@ class _SignUpScreenState extends State<SignUpScreen> {
   TextEditingController confirmPasswordController = TextEditingController();
   bool passwordVisible = false;
   bool confirmPasswordVisible = false;
+  List<UserModel> localUserList = [];
+  List<String> globalUserList = [];
+  static const String globalUserListKey = 'globalUserListKey';
+
+  //set user to globalUserList
+  Future<void> setUser(UserModel user) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    globalUserList = prefs.getStringList(globalUserListKey) ?? [];
+    globalUserList.add(jsonEncode(user.toJson()));
+    prefs.setStringList(globalUserListKey, globalUserList);
+  }
+
+  //get global users................
+  Future<void> getUsers() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    List<String>? globalUsers = prefs.getStringList(globalUserListKey);
+    if (globalUsers != null) {
+      localUserList = [];
+      for (var userString in globalUsers) {
+        Map<String, dynamic> userData = json.decode(userString);
+        UserModel user = UserModel.fromJson(userData);
+        localUserList.add(user);
+      }
+    }
+  }
+
+  //This function checks entered email or mobile already exist or not
+  bool alreadyExist({required String email, required String mobile}) {
+    for (int i = 0; i < localUserList.length; i++) {
+      if (localUserList[i].email == email ||
+          localUserList[i].mobile == mobile) {
+        return true;
+      }
+    }
+    return false;
+  }
+
   @override
   Widget build(BuildContext context) {
     double screenHeight = MediaQuery.of(context).size.height;
@@ -305,8 +347,55 @@ class _SignUpScreenState extends State<SignUpScreen> {
                         MaterialButton(
                           height: screenHeight * 0.07,
                           minWidth: screenWidth,
-                          onPressed: () {
-                            if (formKey.currentState!.validate()) {}
+                          onPressed: () async {
+                            if (formKey.currentState!.validate()) {
+                              await getUsers();
+                              //check if entered email or mobile already exist or not 
+                              if (alreadyExist(
+                                  email: emailController.text,
+                                  mobile: mobileController.text)) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                    content: Text(
+                                      "This email or mobile already exists",
+                                      style: TextStyle(fontSize: 16),
+                                    ),
+                                    padding: EdgeInsets.all(8),
+                                    duration: Duration(seconds: 5),
+                                  ),
+                                );
+                              } else {
+                                setUser(
+                                  UserModel(
+                                      name: nameController.text,
+                                      email: emailController.text,
+                                      mobile: mobileController.text,
+                                      password: passwordController.text),
+                                );
+                                setState(() {
+                                  nameController.text = '';
+                                  emailController.text = '';
+                                  mobileController.text = '';
+                                  passwordController.text = '';
+                                  confirmPasswordController.text = '';
+                                });
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                    content: Text(
+                                      "Registered Successfully",
+                                      style: TextStyle(fontSize: 16),
+                                    ),
+                                    padding: EdgeInsets.all(8),
+                                    duration: Duration(seconds: 5),
+                                  ),
+                                );
+                                Navigator.of(context).pushAndRemoveUntil(
+                                    MaterialPageRoute(
+                                        builder: (context) =>
+                                            const LoginScreen()),
+                                    (route) => false);
+                              }
+                            }
                           },
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(10),

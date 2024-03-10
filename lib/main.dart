@@ -1,17 +1,41 @@
 import 'package:flutter/material.dart';
+import 'package:quiz/screens/dashboard_screen.dart';
 import 'package:quiz/screens/home_screen.dart';
+import 'package:quiz/screens/login_screen.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
   runApp(const MyApp());
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
   const MyApp({super.key});
+
+  @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  bool? isloggedIn = false;
+  void getLoginStatus() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+      isloggedIn = prefs.getBool(LoginScreenState.isLoggedInKey);
+    });
+   
+  }
+
+  @override
+  void initState() {
+    getLoginStatus();
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
+    return MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: HomeScreen(),
+      home: isloggedIn==true?const DashboardScreen():const HomeScreen(),
     );
   }
 }
