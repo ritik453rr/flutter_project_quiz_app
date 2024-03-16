@@ -236,10 +236,6 @@ class SignUpScreenState extends State<SignUpScreen> {
                           validator: (value) {
                             if (value!.isEmpty) {
                               return 'enter password';
-                            } else if (!RegExp(
-                                    r'^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[!@#\$&*~]).{8,}$')
-                                .hasMatch(value)) {
-                              return 'enter a strong password ';
                             }
                             return null;
                           },
@@ -342,15 +338,16 @@ class SignUpScreenState extends State<SignUpScreen> {
                           ),
                         ),
                         SizedBox(
-                          height: screenHeight * 0.015,
+                          height: screenHeight * 0.05,
                         ),
+                        //Submit Button....
                         MaterialButton(
                           height: screenHeight * 0.07,
                           minWidth: screenWidth,
                           onPressed: () async {
                             if (formKey.currentState!.validate()) {
                               await getUsers();
-                              //check if entered email or mobile already exist or not 
+                              //check if entered email or mobile already exist or not
                               if (alreadyExist(
                                   email: emailController.text,
                                   mobile: mobileController.text)) {
@@ -380,11 +377,8 @@ class SignUpScreenState extends State<SignUpScreen> {
                                   confirmPasswordController.text = '';
                                 });
                                 ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(
-                                    content: Text(
-                                      "Registered Successfully",
-                                      style: TextStyle(fontSize: 16),
-                                    ),
+                                  SnackBar(
+                                    content: Text('Registered Succussfully'),
                                     padding: EdgeInsets.all(8),
                                     duration: Duration(seconds: 5),
                                   ),

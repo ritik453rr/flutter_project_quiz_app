@@ -83,7 +83,7 @@ class HomeScreen extends StatelessWidget {
                     },
                     height: screenHeight * 0.07,
                     minWidth: double.infinity,
-                    color: Colors.blue,
+                    color: Theme.of(context).primaryColor,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(50),
                     ),

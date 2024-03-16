@@ -24,15 +24,16 @@ class LoginScreenState extends State<LoginScreen> {
   List<UserModel> localUserList = [];
 
   static const isLoggedInKey = 'isLoggedInKey';
-  static const userId = 'userId';
-  
+  static const currentUserId = 'userId';
+
   //save current user info
   void loginInfoSaver(String email) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     prefs.setBool(isLoggedInKey, true);
-    prefs.setString(userId, email);
+    prefs.setString(currentUserId, email);
   }
- //get all the global users and store in the local user list
+
+  //get all the global users and store in the local user list
   Future<void> getUsers() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     List<String>? globalUsers =
@@ -45,6 +46,17 @@ class LoginScreenState extends State<LoginScreen> {
         localUserList.add(user);
       }
     }
+  }
+
+  bool userExist(
+      {required String enteredEmail, required String enteredPassword}) {
+    for (UserModel i in localUserList) {
+      if (i.email == enteredEmail && i.password == enteredPassword) {
+        loginInfoSaver(i.email);
+        return true;
+      }
+    }
+    return false;
   }
 
   @override
@@ -197,24 +209,42 @@ class LoginScreenState extends State<LoginScreen> {
                         if (formKey.currentState!.validate()) {
                           //getting all the users from sharedPreferences and store local list of users
                           await getUsers();
-                          for (UserModel i in localUserList) {
-                            if (i.email == enteredEmailController.text &&
-                                i.password == enteredPasswordController.text) {
-                              loginInfoSaver(i.email);
-                              Navigator.of(context).pushAndRemoveUntil(
-                                  MaterialPageRoute(
-                                      builder: (context) =>
-                                          DashboardScreen()),
-                                  (route) => false);
-
-                              break;
-                            }
+                          if (userExist(
+                              enteredEmail: enteredEmailController.text,
+                              enteredPassword:
+                                  enteredPasswordController.text)) {
+                            Navigator.pushAndRemoveUntil(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => DashboardScreen()),
+                                (route) => false);
+                          } else {
+                            showDialog(
+                                context: context,
+                                builder: (context) {
+                                  return AlertDialog(
+                                    title: Text('Warnig!'),
+                                    content: Text('invalid email or password'),
+                                    actions: [
+                                      TextButton(
+                                        onPressed: () {
+                                          Navigator.of(context).pop();
+                                        },
+                                        child: Text(
+                                          'ok',
+                                          style: TextStyle(
+                                              color: Colors.blueAccent),
+                                        ),
+                                      )
+                                    ],
+                                  );
+                                });
                           }
                         }
                       },
                       height: screenHeight * 0.065,
                       minWidth: screenWidth,
-                      color: Colors.lightBlue,
+                      color: Theme.of(context).primaryColor,
                       shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(10)),
                       child: Text(
@@ -253,7 +283,7 @@ class LoginScreenState extends State<LoginScreen> {
                             "Sign up",
                             style: TextStyle(
                                 fontSize: screenHeight * 0.024,
-                                color: Colors.lightBlue),
+                                color: Theme.of(context).primaryColor),
                           ),
                         ),
                       ],

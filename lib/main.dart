@@ -35,6 +35,9 @@ class _MyAppState extends State<MyApp> {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
+      theme: ThemeData(
+        primaryColor: Colors.blueAccent
+      ),
       home: isloggedIn==true?const DashboardScreen():const HomeScreen(),
     );
   }
