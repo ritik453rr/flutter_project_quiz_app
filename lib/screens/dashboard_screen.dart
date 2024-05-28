@@ -88,8 +88,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   builder: (context) {
                     return AlertDialog(
                       title: const Text('Alert!'),
-                      content: const Text('Are sure to logout'),
+                      content: const Text('Are sure to logout?'),
                       actions: [
+                        //Yes button......
                         TextButton(
                           onPressed: () async {
                             SharedPreferences prefs =
@@ -98,16 +99,22 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                 LoginScreenState.isLoggedInKey, false);
                             Navigator.of(context).pushAndRemoveUntil(
                                 MaterialPageRoute(
-                                    builder: (context) => const HomeScreen()),
+                                    builder: (context) => const LoginScreen()),
                                 (route) => false);
                           },
-                          child: const Text('Yes'),
+                          child: const Text(
+                            'Yes',
+                            style: TextStyle(color: Colors.black),
+                          ),
                         ),
                         TextButton(
                           onPressed: () {
                             Navigator.of(context).pop();
                           },
-                          child: const Text('No'),
+                          child: const Text(
+                            'No',
+                            style: TextStyle(color: Colors.black),
+                          ),
                         ),
                       ],
                     );

@@ -1,5 +1,4 @@
 import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:quiz/model/user_model.dart';
 import 'package:quiz/screens/dashboard_screen.dart';
@@ -18,7 +17,7 @@ class LoginScreenState extends State<LoginScreen> {
 
   TextEditingController enteredEmailController = TextEditingController();
   TextEditingController enteredPasswordController = TextEditingController();
-
+   //variable to control password visibility
   bool passwordVisible = false;
 
   List<UserModel> localUserList = [];
@@ -26,7 +25,7 @@ class LoginScreenState extends State<LoginScreen> {
   static const isLoggedInKey = 'isLoggedInKey';
   static const currentUserId = 'userId';
 
-  //save current user info
+  //save current user info function
   void loginInfoSaver(String email) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     prefs.setBool(isLoggedInKey, true);

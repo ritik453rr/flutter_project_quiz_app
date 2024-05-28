@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:quiz/screens/dashboard_screen.dart';
-import 'package:quiz/screens/home_screen.dart';
 import 'package:quiz/screens/login_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -22,7 +21,6 @@ class _MyAppState extends State<MyApp> {
     setState(() {
       isloggedIn = prefs.getBool(LoginScreenState.isLoggedInKey);
     });
-   
   }
 
   @override
@@ -35,10 +33,8 @@ class _MyAppState extends State<MyApp> {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        primaryColor: Colors.blueAccent
-      ),
-      home: isloggedIn==true?const DashboardScreen():const HomeScreen(),
+      theme: ThemeData(primaryColor: Colors.blueAccent),
+      home: isloggedIn == true ? const DashboardScreen() : const LoginScreen(),
     );
   }
 }

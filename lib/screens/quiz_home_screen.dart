@@ -82,155 +82,157 @@ class _QuizHomeScreenState extends State<QuizHomeScreen> {
           scrollDirection: Axis.horizontal,
           itemBuilder: ((context, index) {
             //Question Start.....
-            return Column(
-              children: [
-                const SizedBox(
-                  height: 50,
-                ),
-                //Question Number.....
-                Text(
-                  "Question ${index + 1}/${questions.length}",
-                  style: const TextStyle(
-                    color: Colors.black,
-                    fontSize: 28.0,
+            return SingleChildScrollView(
+              child: Column(
+                children: [
+                  const SizedBox(
+                    height: 50,
                   ),
-                ),
-                //Divider............
-                const Divider(
-                  color: Colors.black,
-                  height: 8.0,
-                  thickness: 1.0,
-                ),
-                const SizedBox(
-                  height: 15.0,
-                ),
-                //Question....
-                Text(
-                  questions[index].question!,
-                  style: const TextStyle(
-                    color: Colors.black,
-                    fontSize: 26.0,
+                  //Question Number.....
+                  Text(
+                    "Question ${index + 1}/${questions.length}",
+                    style: const TextStyle(
+                      color: Colors.black,
+                      fontSize: 28.0,
+                    ),
                   ),
-                ),
-                const SizedBox(
-                  height: 35.0,
-                ),
-                for (int i = 0; i < questions[index].options!.length; i++) ...[
-                  SizedBox(
-                    width: double.infinity,
-                    height: 60,
-                    child: Padding(
-                      padding: const EdgeInsets.only(top: 12),
-                      child: ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                          shape: const StadiumBorder(),
-                          backgroundColor: selectedIndexes[index] == i
-                              ? Colors.green
-                              : Colors.blue,
-                        ),
-                        onPressed: () {
-                          setState(() {
-                            answerValue = questions[index]
-                                .options!
-                                .entries
-                                .toList()[i]
-                                .value;
-                            selectedIndexes[index] = i;
-                          });
-                        },
-                        child: Text(
-                          questions[index].options!.keys.toList()[i],
-                          style: const TextStyle(
-                            fontSize: 17,
-                            color: Colors.white,
-                          ),
-                        ),
-                      ),
+                  //Divider............
+                  const Divider(
+                    color: Colors.black,
+                    height: 8.0,
+                    thickness: 1.0,
+                  ),
+                  const SizedBox(
+                    height: 15.0,
+                  ),
+                  //Question....
+                  Text(
+                    questions[index].question!,
+                    style: const TextStyle(
+                      color: Colors.black,
+                      fontSize: 26.0,
                     ),
-                  )
-                ],
-                const SizedBox(
-                  height: 50.0,
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: [
-                    //Previous button.....
-                    OutlinedButton(
-                      style: OutlinedButton.styleFrom(
-                        shape: const StadiumBorder(),
-                        backgroundColor: Colors.blue,
-                      ),
-                      onPressed: () {
-                        pageController.previousPage(
-                            duration: const Duration(milliseconds: 400),
-                            curve: Curves.linear);
-                      },
-                      child: const Text(
-                        "Previous",
-                        style: TextStyle(
-                          color: Colors.white,
-                        ),
-                      ),
-                    ),
+                  ),
+                  const SizedBox(
+                    height: 35.0,
+                  ),
+                  for (int i = 0; i < questions[index].options!.length; i++) ...[
                     SizedBox(
-                      width: index + 1 == questions.length ? 130 : 100,
-                    ),
-                    //Next Question/See Result button
-                    OutlinedButton(
-                      style: OutlinedButton.styleFrom(
-                        shape: const StadiumBorder(),
-                        backgroundColor: Colors.blue,
-                      ),
-                      onPressed: index + 1 == questions.length
-                          ? () {
-                              if (selectedIndexes[index] != null) {
-                                if (answerValue) {
-                                  setState(
-                                    () {
-                                      score += 1;
-                                    },
-                                  );
-                                }
-                                scoreSaver();
-                                Navigator.of(context).pushAndRemoveUntil(
-                                    MaterialPageRoute(
-                                      builder: (context) =>
-                                          QuizResultScreen(score: score),
-                                    ),
-                                    (route) => false);
-                              }
-                            }
-                          : () {
-                              if (selectedIndexes[index] != null) {
-                                if (answerValue) {
-                                  setState(
-                                    () {
-                                      score += 1;
-                                    },
-                                  );
-                                }
-
-                                setState(() {
-                                  answerValue = false;
-                                });
-                                pageController.nextPage(
-                                    duration: const Duration(milliseconds: 400),
-                                    curve: Curves.ease);
-                              }
-                            },
-                      child: Text(
-                        index + 1 == questions.length
-                            ? "See Result"
-                            : "Next Question",
-                        style: const TextStyle(
-                          color: Colors.white,
+                      width: double.infinity,
+                      height: 60,
+                      child: Padding(
+                        padding: const EdgeInsets.only(top: 12),
+                        child: ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            shape: const StadiumBorder(),
+                            backgroundColor: selectedIndexes[index] == i
+                                ? Colors.green
+                                : Colors.blue,
+                          ),
+                          onPressed: () {
+                            setState(() {
+                              answerValue = questions[index]
+                                  .options!
+                                  .entries
+                                  .toList()[i]
+                                  .value;
+                              selectedIndexes[index] = i;
+                            });
+                          },
+                          child: Text(
+                            questions[index].options!.keys.toList()[i],
+                            style: const TextStyle(
+                              fontSize: 17,
+                              color: Colors.white,
+                            ),
+                          ),
                         ),
                       ),
                     )
                   ],
-                ),
-              ],
+                  const SizedBox(
+                    height: 50.0,
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      //Previous button.....
+                      OutlinedButton(
+                        style: OutlinedButton.styleFrom(
+                          shape: const StadiumBorder(),
+                          backgroundColor: Colors.blue,
+                        ),
+                        onPressed: () {
+                          pageController.previousPage(
+                              duration: const Duration(milliseconds: 400),
+                              curve: Curves.linear);
+                        },
+                        child: const Text(
+                          "Previous",
+                          style: TextStyle(
+                            color: Colors.white,
+                          ),
+                        ),
+                      ),
+                      SizedBox(
+                        width: index + 1 == questions.length ? 130 : 100,
+                      ),
+                      //Next Question/See Result button
+                      OutlinedButton(
+                        style: OutlinedButton.styleFrom(
+                          shape: const StadiumBorder(),
+                          backgroundColor: Colors.blue,
+                        ),
+                        onPressed: index + 1 == questions.length
+                            ? () {
+                                if (selectedIndexes[index] != null) {
+                                  if (answerValue) {
+                                    setState(
+                                      () {
+                                        score += 1;
+                                      },
+                                    );
+                                  }
+                                  scoreSaver();
+                                  Navigator.of(context).pushAndRemoveUntil(
+                                      MaterialPageRoute(
+                                        builder: (context) =>
+                                            QuizResultScreen(score: score),
+                                      ),
+                                      (route) => false);
+                                }
+                              }
+                            : () {
+                                if (selectedIndexes[index] != null) {
+                                  if (answerValue) {
+                                    setState(
+                                      () {
+                                        score += 1;
+                                      },
+                                    );
+                                  }
+              
+                                  setState(() {
+                                    answerValue = false;
+                                  });
+                                  pageController.nextPage(
+                                      duration: const Duration(milliseconds: 400),
+                                      curve: Curves.ease);
+                                }
+                              },
+                        child: Text(
+                          index + 1 == questions.length
+                              ? "See Result"
+                              : "Next Question",
+                          style: const TextStyle(
+                            color: Colors.white,
+                          ),
+                        ),
+                      )
+                    ],
+                  ),
+                ],
+              ),
             );
           }),
         ),

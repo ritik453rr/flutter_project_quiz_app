@@ -1,5 +1,4 @@
 import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:quiz/model/user_model.dart';
 import 'package:quiz/screens/login_screen.dart';
@@ -21,19 +20,19 @@ class SignUpScreenState extends State<SignUpScreen> {
   TextEditingController confirmPasswordController = TextEditingController();
   bool passwordVisible = false;
   bool confirmPasswordVisible = false;
+  //list to store globalusers locally
   List<UserModel> localUserList = [];
-  List<String> globalUserList = [];
+  List<String> globalUserStringList = [];
   static const String globalUserListKey = 'globalUserListKey';
-
-  //set user to globalUserList
+  //set/store user to globalUserList
   Future<void> setUser(UserModel user) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    globalUserList = prefs.getStringList(globalUserListKey) ?? [];
-    globalUserList.add(jsonEncode(user.toJson()));
-    prefs.setStringList(globalUserListKey, globalUserList);
+    globalUserStringList = prefs.getStringList(globalUserListKey) ?? [];
+    globalUserStringList.add(jsonEncode(user.toJson()));
+    prefs.setStringList(globalUserListKey, globalUserStringList);
   }
 
-  //get global users................
+  //get global user string list to store in the localUserList after decode
   Future<void> getUsers() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     List<String>? globalUsers = prefs.getStringList(globalUserListKey);
@@ -346,7 +345,7 @@ class SignUpScreenState extends State<SignUpScreen> {
                           minWidth: screenWidth,
                           onPressed: () async {
                             if (formKey.currentState!.validate()) {
-                              await getUsers();
+                             await getUsers();
                               //check if entered email or mobile already exist or not
                               if (alreadyExist(
                                   email: emailController.text,
@@ -354,7 +353,7 @@ class SignUpScreenState extends State<SignUpScreen> {
                                 ScaffoldMessenger.of(context).showSnackBar(
                                   const SnackBar(
                                     content: Text(
-                                      "This email or mobile already exists",
+                                      "This email or mobile already registered",
                                       style: TextStyle(fontSize: 16),
                                     ),
                                     padding: EdgeInsets.all(8),
@@ -377,7 +376,7 @@ class SignUpScreenState extends State<SignUpScreen> {
                                   confirmPasswordController.text = '';
                                 });
                                 ScaffoldMessenger.of(context).showSnackBar(
-                                  SnackBar(
+                                  const SnackBar(
                                     content: Text('Registered Succussfully'),
                                     padding: EdgeInsets.all(8),
                                     duration: Duration(seconds: 5),
